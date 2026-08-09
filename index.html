@@ -378,7 +378,9 @@
                 if(result.ok){
                     alert('Заявка отправлена. Сумма: ' + totalVal);
                 } else {
-                    alert('Ошибка отправки: ' + (result.error || 'unknown'));
+                    const errMsg = result.error || result.description || result.text || (`HTTP ${result.status || '??'}`);
+                    console.error('Send failed', result);
+                    alert('Ошибка отправки: ' + errMsg);
                 }
                 closeModal();
             });
@@ -400,7 +402,9 @@
                         alert('Заявка отправлена. Спасибо!');
                         contactForm.reset();
                     } else {
-                        alert('Ошибка отправки: ' + (result.error || 'unknown'));
+                        const errMsg = result.error || result.description || result.text || (`HTTP ${result.status || '??'}`);
+                        console.error('Send failed', result);
+                        alert('Ошибка отправки: ' + errMsg);
                     }
                 });
             }
