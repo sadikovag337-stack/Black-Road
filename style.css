@@ -515,3 +515,26 @@ button:hover {
         width: 100%;
     }
 }
+
+/* Modal styles for service details and calculator */
+.modal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 60; }
+.modal.open { display: flex; }
+.modal-backdrop { position: absolute; inset: 0; background: rgba(2,6,23,0.6); }
+.modal-panel { position: relative; width: min(760px, 96%); background: #fff; border-radius: 14px; padding: 20px; box-shadow: 0 30px 80px rgba(2,6,23,0.4); z-index: 2; color: #0f172a; }
+.modal-close { position: absolute; right: 12px; top: 8px; background: transparent; border: none; font-size: 26px; cursor: pointer; color: #334155; }
+.modal-header h3 { margin: 0 0 6px; }
+.modal-header .muted { color: #64748b; margin: 0 0 12px; }
+.subservices-list { display: grid; gap: 8px; margin-bottom: 16px; }
+.subservice-item { display: flex; gap: 12px; align-items: center; font-size: 0.98rem; color: #0f172a; }
+.subservice-item input { width: 18px; height: 18px; }
+.calc-row { display: flex; gap: 18px; align-items: end; flex-wrap: wrap; margin-bottom: 16px; }
+.calc-row label { display: flex; flex-direction: column; gap: 6px; }
+.calc-row input { width: 160px; padding: 10px 12px; border-radius: 10px; border: 1px solid #e6e9ef; }
+.unit-info { color: #475569; align-self: center; }
+.calc-total { display: flex; gap: 30px; justify-content: space-between; align-items: center; padding: 12px 14px; border-radius: 10px; background: #fbfbfd; border: 1px solid #eef2f6; }
+.modal-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 12px; }
+
+@media (max-width: 520px) {
+    .calc-row input { width: 100%; }
+    .calc-total { flex-direction: column; align-items: flex-start; gap: 8px; }
+}
