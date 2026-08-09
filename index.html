@@ -150,9 +150,7 @@
                         <p><strong>Email:</strong> Stroydorogu@gmail.com</p>
                         <p><strong>Город:</strong> Ташкент, Узбекистаг</p>
                     </div>
-                    <form class="contact-form" action="https://formsubmit.co/akmaldj337@gmail.com" method="post">
-                        <input type="hidden" name="_subject" value="Новая заявка с Black Road">
-                        <input type="hidden" name="_captcha" value="false">
+                    <form class="contact-form" action="#" method="post">
                         <label>
                             <span>Ваше имя</span>
                             <input type="text" name="name" placeholder="Фамилия, Имя" required>
@@ -287,45 +285,9 @@
             // update on area change
             inputArea.addEventListener('input', updateCalc);
 
-            // request quote: populate hidden form and submit to formsubmit.co
-            // create hidden form element if not present
-            if(!document.getElementById('emailForm')){
-                const f = document.createElement('form');
-                f.id = 'emailForm';
-                f.method = 'POST';
-                f.action = 'https://formsubmit.co/akmaldj337@gmail.com';
-                f.style.display = 'none';
-                // hidden inputs
-                ['_subject','_captcha','from','contact_info','service','subservices','area','total'].forEach(name=>{
-                    const i = document.createElement('input');
-                    i.name = name;
-                    i.id = 'ef_' + name.replace(/[^a-z0-9_]/gi,'');
-                    f.appendChild(i);
-                });
-                // default subject and captcha
-                document.getElementById('ef__subject').value = 'Заявка с сайта Black Road';
-                document.getElementById('ef__captcha').value = 'false';
-                document.body.appendChild(f);
-            }
-
+            // request quote (demo)
             document.getElementById('requestQuote').addEventListener('click', function(){
-                const nameInput = document.querySelector('.contact-form input[name="name"]');
-                const contactInput = document.querySelector('.contact-form input[name="contact"]');
-                const usrName = nameInput ? nameInput.value : '';
-                const usrContact = contactInput ? contactInput.value : '';
-                const checkedNames = Array.from(subservicesList.querySelectorAll('input[type=checkbox]:checked')).map(cb=>cb.dataset.name).join(', ');
-                const areaVal = inputArea.value || '0';
-                const totalVal = totalAmount.textContent || '$0.00';
-
-                document.getElementById('ef_from').value = usrName;
-                document.getElementById('ef_contact_info').value = usrContact;
-                document.getElementById('ef_service').value = modalTitle.textContent || '';
-                document.getElementById('ef_subservices').value = checkedNames;
-                document.getElementById('ef_area').value = areaVal;
-                document.getElementById('ef_total').value = totalVal;
-
-                // submit hidden form
-                document.getElementById('emailForm').submit();
+                alert('Заявка отправлена. Сумма: ' + totalAmount.textContent + ' (демо)');
                 closeModal();
             });
         })();
