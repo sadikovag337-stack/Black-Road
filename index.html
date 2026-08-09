@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Black Road UZ</title>
+    <title>Black Road</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header class="header">
         <div class="container header-inner">
-            <h1>BLACK ROAD UZ</h1>
+            <h1>BLACK ROAD</h1>
             <nav class="menu">
                 <a href="#home">Главная</a>
                 <a href="#services">Услуги</a>
@@ -21,31 +21,85 @@
 
     <main>
         <section id="home" class="hero">
-            <div class="container">
+            <div class="container hero-inner">
+                <span class="eyebrow">Дорожные решения от профи</span>
                 <h2>Black Road</h2>
-                <p>Укладка асфальта быстро и качественно</p>
-                <a class="btn btn-primary" href="#contact">Заказать услугу</a>
+                <p>Профессиональные решения по устройству, ремонту и благоустройству дорог для бизнеса, города и частных объектов.</p>
+                <div class="hero-actions">
+                    <a class="btn btn-primary" href="#contact">Заказать услугу</a>
+                    <a class="btn btn-secondary" href="#services">Наши услуги</a>
+                </div>
+                <div class="hero-stats">
+                    <article class="stat-card">
+                        <span>12</span>
+                        <p>лет опыта в дорожном строительстве</p>
+                    </article>
+                    <article class="stat-card">
+                        <span>150+</span>
+                        <p>успешных проектов по всей России</p>
+                    </article>
+                    <article class="stat-card">
+                        <span>100%</span>
+                        <p>соблюдение сроков и качества</p>
+                    </article>
+                </div>
             </div>
         </section>
 
         <section id="services" class="services">
             <div class="container">
                 <h2>Наши услуги</h2>
+                <p class="section-description">Комплексное дорожное строительство и обслуживание с вниманием к качеству, срокам и безопасности.</p>
                 <div class="service-list">
                     <article class="service">
-                        <h3>Укладка асфальта</h3>
-                        <p>Профессиональная укладка асфальта на любом объекте.</p>
+                        <div class="service-icon">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12l2-2 4 4 8-8 2 2-10 10-6-6z"/></svg>
+                        </div>
+                        <h3>Дорожно разметочные работы</h3>
+                        <p>Профессиональная разметка дорог и автомобильных полос с использованием качественных материалов.</p>
                         <button class="btn">Подробнее</button>
                     </article>
                     <article class="service">
-                        <h3>Ремонт дорог</h3>
-                        <p>Качественный ремонт автомобильных дорог.</p>
+                        <div class="service-icon">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13h16v2H4zm2-4h12v2H6zm-2 8h16v2H4z"/></svg>
+                        </div>
+                        <h3>Защитные асфальто-бетонные покрытия</h3>
+                        <p>Качественные защитные покрытия для автомобильных дорог и территорий.</p>
                         <button class="btn">Подробнее</button>
                     </article>
                     <article class="service">
-                        <h3>Услуга3</h3>
-                        <p>Описание.</p>
+                        <div class="service-icon">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l7 7-3 3-4-4-4 4-3-3 7-7zm0 20a2 2 0 100-4 2 2 0 000 4z"/></svg>
+                        </div>
+                        <h3>Благоустройство территорий</h3>
+                        <p>Профессиональное благоустройство придомовых и коммерческих территорий с аккуратной отделкой.</p>
                         <button class="btn">Подробнее</button>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="projects">
+            <div class="container">
+                <div class="section-head">
+                    <h2>Реализованные проекты</h2>
+                    <p class="section-description">Наши решения уже работают на объектах разного масштаба: дороги, стоянки и подъездные пути.</p>
+                </div>
+                <div class="project-grid">
+                    <article class="project-card">
+                        <span class="project-label">Городская трасса</span>
+                        <h3>Ремонт 12 км автомагистрали</h3>
+                        <p>Реконструкция дорожного покрытия с бордюрами, разметкой и новым асфальтом.</p>
+                    </article>
+                    <article class="project-card">
+                        <span class="project-label">Коммерческий парк</span>
+                        <h3>Асфальтировка территории склада</h3>
+                        <p>Надёжное покрытие для интенсивного движения грузовой техники и клиентов.</p>
+                    </article>
+                    <article class="project-card">
+                        <span class="project-label">Жилой квартал</span>
+                        <h3>Благоустройство подъездных путей</h3>
+                        <p>Укладка асфальта, озеленение и удобные пешеходные дорожки для жителей.</p>
                     </article>
                 </div>
             </div>
@@ -54,29 +108,33 @@
         <section id="about" class="about">
             <div class="container">
                 <h2>О компании</h2>
-                <p>
-                    Общество с ограниченной ответственностью «MARKUP-MASTER» выражает Вам свое почтение и предлагает взаимовыгодное сотрудничество в сфере устройства, Асфальтирование и благоустройство
-                    Наша компания специализируется на выполнении полного комплекса работ по укладке, асфальтобетонного полотна , шлифовке, полировке и кристаллизации покрытий из мрамора, гранита и бетона. Мы применяем современное профессиональное оборудование, качественные расходные материалы и передовые технологии обработки поверхностей, что позволяет гарантировать высокое качество выполняемых
-                    работ и длительный срок службы покрытий.
-                </p>
+                <p class="section-description">Надежный подрядчик в сфере дорожного строительства с опытом работы на коммерческих и государственных объектах.</p>
+                <div class="about-text">
+                    <p>Общество с ограниченной ответственностью «MARKUP-MASTER» выражает Вам свое почтение и предлагает взаимовыгодное сотрудничество в сфере устройства дорог, асфальтирования и благоустройства.</p>
+                    <p>Мы применяем современное профессиональное оборудование, качественные расходные материалы и передовые технологии обработки поверхностей. Это позволяет гарантировать высокое качество работ и длительный срок службы покрытий.</p>
+                </div>
             </div>
         </section>
 
         <section class="why">
             <div class="container">
-                <h2>описание</h2>
+                <h2>Почему выбирают нас</h2>
+                <p class="section-description">Опыт, ответственность и аккуратность в каждом проекте делают нас надежным партнёром.</p>
                 <div class="features">
                     <div class="feature">
-                        <h3>Описание</h3>
-                        <p>Описание.</p>
+                        <div class="feature-icon">✓</div>
+                        <h3>Гарантия качества</h3>
+                        <p>Каждый этап работ контролируется и выполняется в соответствии со стандартами.</p>
                     </div>
                     <div class="feature">
-                        <h3>Описание</h3>
-                        <p>Описание.</p>
+                        <div class="feature-icon">✓</div>
+                        <h3>Соблюдение сроков</h3>
+                        <p>Мы ценим ваше время и выполняем работу в оговоренные сроки.</p>
                     </div>
                     <div class="feature">
-                        <h3>Описание</h3>
-                        <p>Описание.</p>
+                        <div class="feature-icon">✓</div>
+                        <h3>Прозрачная цена</h3>
+                        <p>Открытая смета и честные условия без скрытых доплат.</p>
                     </div>
                 </div>
             </div>
@@ -85,9 +143,29 @@
         <section id="contact" class="contact">
             <div class="container">
                 <h2>Связаться с нами</h2>
-                <p>Телефон: (номер телефона)</p>
-                <p>Email: почта</p>
-                <a class="btn btn-primary" href="https://t.me/Stroydorogu1" target="_blank" rel="noreferrer noopener">Связаться</a>
+                <p class="section-description">Оставьте заявку и получите расчет стоимости с рекомендациями по срокам и материалам.</p>
+                <div class="contact-grid">
+                    <div class="contact-details">
+                        <p><strong>Телефон:</strong> +998 90 962-46-77</p>
+                        <p><strong>Email:</strong> почта</p>
+                        <p><strong>Город:</strong> Ташкент, Узбекистаг</p>
+                    </div>
+                    <form class="contact-form" action="#" method="post">
+                        <label>
+                            <span>Ваше имя</span>
+                            <input type="text" name="name" placeholder="Фамилия, Имя" required>
+                        </label>
+                        <label>
+                            <span>Телефон или email</span>
+                            <input type="text" name="contact" placeholder="+998 00 000-00-00" required>
+                        </label>
+                        <label>
+                            <span>Описание задачи</span>
+                            <textarea name="message" rows="4" placeholder="Кратко опишите свой проект"></textarea>
+                        </label>
+                        <button class="btn btn-primary" type="submit">Отправить заявку</button>
+                    </form>
+                </div>
             </div>
         </section>
     </main>
