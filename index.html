@@ -175,6 +175,32 @@
             <p>© 2026 Black Road.</p>
         </div>
     </footer>
+        <!-- Bot settings (stored in session only) -->
+        <button id="botSettingsBtn" class="bot-settings-btn" title="Настройки бота">⚙</button>
+        <div id="botSettingsModal" class="modal" aria-hidden="true">
+            <div class="modal-backdrop" data-close></div>
+            <div class="modal-panel" role="dialog" aria-modal="true">
+                <button class="modal-close" data-close aria-label="Закрыть">×</button>
+                <header class="modal-header">
+                    <h3>Настройки Telegram</h3>
+                    <p class="muted">Токен бота и Chat ID сохраняются только в вашем браузере (sessionStorage).</p>
+                </header>
+                <div class="modal-body">
+                    <label>
+                        <span>Bot Token</span>
+                        <input id="inputBotToken" type="password" placeholder="Введите BOT_TOKEN">
+                    </label>
+                    <label>
+                        <span>Chat ID</span>
+                        <input id="inputChatId" type="text" placeholder="Введите CHAT_ID">
+                    </label>
+                    <div style="margin-top:12px; display:flex; gap:8px; justify-content:flex-end;">
+                        <button class="btn" data-close>Закрыть</button>
+                        <button id="saveBotSettings" class="btn btn-primary">Сохранить в session</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     <!-- Service details & calculator modal -->
     <div id="serviceModal" class="modal" aria-hidden="true">
         <div class="modal-backdrop" data-close></div>
@@ -288,6 +314,29 @@
             // request quote: send to serverless endpoint which forwards to Telegram
             async function postToServer(payload){
                 try{
+                    // if session has direct token/chat — send directly from browser
+                    const token = sessionStorage.getItem('tg_token');
+                    const chat = sessionStorage.getItem('tg_chat');
+                    if (token && chat) {
+                        // send directly to Telegram Bot API
+                        const textParts = [];
+                        if (payload.service) textParts.push(`*Услуга:* ${payload.service}`);
+                        if (payload.subservices) textParts.push(`*Подуслуги:* ${payload.subservices}`);
+                        if (payload.area) textParts.push(`*Площадь:* ${payload.area} м²`);
+                        if (payload.total) textParts.push(`*Итого:* ${payload.total}`);
+                        if (payload.name) textParts.push(`*Имя:* ${payload.name}`);
+                        if (payload.contact) textParts.push(`*Контакт:* ${payload.contact}`);
+                        if (payload.message) textParts.push(`*Сообщение:* ${payload.message}`);
+                        textParts.push(`\n_Отправлено из сайта_`);
+                        const text = textParts.join('\n');
+                        const resp = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ chat_id: chat, text, parse_mode: 'Markdown' })
+                        });
+                        return await resp.json();
+                    }
+                    // fallback to serverless endpoint
                     const res = await fetch('/api/send-telegram', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -347,6 +396,43 @@
                     }
                 });
             }
+
+            // Bot settings modal wiring (store token/chat in sessionStorage)
+            const botBtn = document.getElementById('botSettingsBtn');
+            const botModal = document.getElementById('botSettingsModal');
+            const botCloseEls = botModal ? botModal.querySelectorAll('[data-close]') : [];
+            const inputBotToken = document.getElementById('inputBotToken');
+            const inputChatId = document.getElementById('inputChatId');
+            const saveBotSettings = document.getElementById('saveBotSettings');
+
+            function openBotModal(){
+                if(!botModal) return;
+                botModal.classList.add('open');
+                botModal.setAttribute('aria-hidden','false');
+                // prefill from session
+                inputBotToken.value = sessionStorage.getItem('tg_token') || '';
+                inputChatId.value = sessionStorage.getItem('tg_chat') || '';
+            }
+            function closeBotModal(){
+                if(!botModal) return;
+                botModal.classList.remove('open');
+                botModal.setAttribute('aria-hidden','true');
+            }
+
+            if(botBtn) botBtn.addEventListener('click', openBotModal);
+            botCloseEls.forEach(el=>el.addEventListener('click', closeBotModal));
+            if(saveBotSettings) saveBotSettings.addEventListener('click', function(){
+                const t = inputBotToken.value.trim();
+                const c = inputChatId.value.trim();
+                if(t && c){
+                    sessionStorage.setItem('tg_token', t);
+                    sessionStorage.setItem('tg_chat', c);
+                    alert('Настройки сохранены в сессии. Теперь заявки будут отправляться напрямую.');
+                    closeBotModal();
+                } else {
+                    alert('Введите и токен, и chat id.');
+                }
+            });
         })();
     </script>
 </body>
