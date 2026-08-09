@@ -313,12 +313,18 @@
 
             // request quote: send to serverless endpoint which forwards to Telegram
             async function postToServer(payload){
+                // Helper to safely parse response bodies that may be empty or non-JSON
+                async function safeParse(resp){
+                    const text = await resp.text();
+                    if(!text) return { ok: resp.ok, status: resp.status };
+                    try { return JSON.parse(text); } catch(e) { return { ok: resp.ok, status: resp.status, text }; }
+                }
+
                 try{
                     // if session has direct token/chat — send directly from browser
                     const token = sessionStorage.getItem('tg_token');
                     const chat = sessionStorage.getItem('tg_chat');
                     if (token && chat) {
-                        // send directly to Telegram Bot API
                         const textParts = [];
                         if (payload.service) textParts.push(`*Услуга:* ${payload.service}`);
                         if (payload.subservices) textParts.push(`*Подуслуги:* ${payload.subservices}`);
@@ -334,15 +340,17 @@
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ chat_id: chat, text, parse_mode: 'Markdown' })
                         });
-                        return await resp.json();
+                        // Telegram Bot API is not CORS-friendly; if this fails the fetch will throw.
+                        return await safeParse(resp);
                     }
+
                     // fallback to serverless endpoint
                     const res = await fetch('/api/send-telegram', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload)
                     });
-                    return await res.json();
+                    return await safeParse(res);
                 }catch(e){
                     return { ok: false, error: e.message };
                 }
