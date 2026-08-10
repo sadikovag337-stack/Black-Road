@@ -61,7 +61,7 @@ export default async function handler(req, res) {
     console.log('✅ Заявка отправлена в Telegram');
     return res.status(200).json({ 
       ok: true, 
-      message: 'Заявка успешно отправлена!' 
+      message: 'Заявка успешно отправлена!' я
     });
 
   } catch (error) {
