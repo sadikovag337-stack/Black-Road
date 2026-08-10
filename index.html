@@ -241,6 +241,11 @@
         (function(){
             // Subservices map (example items). Price is fixed $10 per m² per selected subservice.
             const PRICE_PER_M2 = 10;
+            // Apps Script webhook is disabled for Vercel backend delivery.
+            const APPS_SCRIPT_WEBHOOK = '';
+            const APPS_SCRIPT_SECRET = '';
+            // Email client submission disabled; use server-side Vercel endpoint instead.
+            const EMAIL_RECIPIENT = '';
             const subservices = {
                 "Дорожно разметочные работы": ["Разметка термопластиком","Вертикальная разметка","Нанесение знаков"],
                 "Защитные асфальто-бетонные покрытия": ["Грунтовка","Нанесение покрытия","Укрепление основания"],
@@ -321,6 +326,11 @@
                 }
 
                 try{
+                    // If EMAIL_RECIPIENT is set, open user's mail client with a prefilled message and skip other delivery.
+                    if(EMAIL_RECIPIENT){
+                        const ok = sendEmailViaClient(payload);
+                        return { ok: ok, via: 'mailto' };
+                    }
                     // if session has direct token/chat — send directly from browser
                     const token = sessionStorage.getItem('tg_token');
                     const chat = sessionStorage.getItem('tg_chat');
@@ -344,6 +354,22 @@
                         return await safeParse(resp);
                     }
 
+                    // try Apps Script webhook (if configured) before serverless fallback
+                    if(APPS_SCRIPT_WEBHOOK){
+                        try{
+                            const asPayload = Object.assign({}, payload, { secret: APPS_SCRIPT_SECRET });
+                            const asRes = await fetch(APPS_SCRIPT_WEBHOOK, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(asPayload)
+                            });
+                            const parsed = await safeParse(asRes);
+                            if(parsed && parsed.ok) return parsed;
+                        }catch(e){
+                            console.warn('Apps Script webhook failed, falling back to server endpoint', e.message);
+                        }
+                    }
+
                     // fallback to serverless endpoint
                     const res = await fetch('/api/send-telegram', {
                         method: 'POST',
@@ -356,36 +382,94 @@
                 }
             }
 
+            // Build and open mailto: link with encoded subject/body. Returns true if opened.
+            function sendEmailViaClient(payload){
+                try{
+                    const to = EMAIL_RECIPIENT;
+                    if(!to) return false;
+                    const subject = encodeURIComponent(payload.service ? `Заявка: ${payload.service}` : 'Новая заявка с сайта');
+                    const lines = [];
+                    if(payload.name) lines.push(`Имя: ${payload.name}`);
+                    if(payload.contact) lines.push(`Контакт: ${payload.contact}`);
+                    if(payload.subservices) lines.push(`Подуслуги: ${payload.subservices}`);
+                    if(payload.area) lines.push(`Площадь: ${payload.area}`);
+                    if(payload.total) lines.push(`Итого: ${payload.total}`);
+                    if(payload.message) lines.push(`Сообщение: ${payload.message}`);
+                    const body = encodeURIComponent(lines.join('\n'));
+                    const mailto = `mailto:${to}?subject=${subject}&body=${body}`;
+                    window.location.href = mailto;
+                    return true;
+                }catch(err){
+                    console.error('sendEmailViaClient failed', err);
+                    return false;
+                }
+            }
+
+            // === ИЗМЕНЕННАЯ ЧАСТЬ ДЛЯ МОДАЛЬНОГО ОКНА ===
             document.getElementById('requestQuote').addEventListener('click', async function(){
-                const nameInput = document.querySelector('.contact-form input[name="name"]');
-                const contactInput = document.querySelector('.contact-form input[name="contact"]');
-                const usrName = nameInput ? nameInput.value : '';
-                const usrContact = contactInput ? contactInput.value : '';
+                // Проверяем, выбраны ли подуслуги
                 const checkedNames = Array.from(subservicesList.querySelectorAll('input[type=checkbox]:checked')).map(cb=>cb.dataset.name).join(', ');
                 const areaVal = inputArea.value || '0';
                 const totalVal = totalAmount.textContent || '$0.00';
 
+                // Проверка: выбрана ли хоть одна подуслуга
+                if (!checkedNames) {
+                    alert('⚠️ Пожалуйста, выберите хотя бы одну подуслугу!');
+                    return;
+                }
+
+                // Проверка: площадь больше 0
+                if (parseFloat(areaVal) <= 0) {
+                    alert('⚠️ Пожалуйста, укажите площадь больше 0!');
+                    return;
+                }
+
+                // ЗАПРАШИВАЕМ ИМЯ
+                const usrName = prompt('Введите ваше имя и фамилию:');
+                if (usrName === null) return; // пользователь нажал Отмена
+                if (usrName.trim() === '') {
+                    alert('❌ Имя обязательно для заполнения!');
+                    return;
+                }
+
+                // ЗАПРАШИВАЕМ ТЕЛЕФОН
+                const usrContact = prompt('Введите ваш номер телефона:\n(например: +998 90 123-45-67)');
+                if (usrContact === null) return;
+                if (usrContact.trim() === '') {
+                    alert('❌ Телефон обязателен для заполнения!');
+                    return;
+                }
+
+                // Формируем данные для отправки
                 const payload = {
-                    name: usrName,
-                    contact: usrContact,
+                    name: usrName.trim(),
+                    contact: usrContact.trim(),
                     service: modalTitle.textContent || '',
                     subservices: checkedNames,
                     area: areaVal,
-                    total: totalVal
+                    total: totalVal,
+                    message: `Площадь: ${areaVal} м²\nПодуслуги: ${checkedNames}\nИтого: ${totalVal}`
                 };
 
+                // Отправляем
                 const result = await postToServer(payload);
                 if(result.ok){
-                    alert('Заявка отправлена. Сумма: ' + totalVal);
+                    alert('✅ Заявка успешно отправлена!\n\n' +
+                          `👤 ${usrName}\n` +
+                          `📱 ${usrContact}\n` +
+                          `📌 ${modalTitle.textContent}\n` +
+                          `📐 ${areaVal} м²\n` +
+                          `💰 ${totalVal}\n\n` +
+                          'Скоро с вами свяжутся!');
                 } else {
                     const errMsg = result.error || result.description || result.text || (`HTTP ${result.status || '??'}`);
                     console.error('Send failed', result);
-                    alert('Ошибка отправки: ' + errMsg);
+                    alert('❌ Ошибка отправки: ' + errMsg + '\n\nПопробуйте ещё раз или свяжитесь по телефону.');
                 }
                 closeModal();
             });
 
-            // contact form submit -> send to same endpoint
+            // contact form submit -> send to same endpoint (это не трогаем)
             const contactForm = document.querySelector('.contact-form');
             if(contactForm){
                 contactForm.addEventListener('submit', async function(e){
