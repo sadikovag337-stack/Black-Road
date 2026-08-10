@@ -1,29 +1,17 @@
 export default async function handler(req, res) {
-  // Разрешаем только POST запросы
   if (req.method !== 'POST') {
-    return res.status(405).json({ 
-      ok: false, 
-      error: 'Method Not Allowed. Используйте POST.' 
-    });
+    return res.status(405).json({ ok: false, error: 'Method Not Allowed' });
   }
 
-  // Токен и чат ID из переменных окружения Vercel
   const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
   const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
-  // Проверка: есть ли токен и чат
   if (!BOT_TOKEN || !CHAT_ID) {
-    console.error('❌ Нет TELEGRAM_BOT_TOKEN или TELEGRAM_CHAT_ID');
-    return res.status(500).json({ 
-      ok: false, 
-      error: 'Телеграм бот не настроен. Добавьте переменные окружения.' 
-    });
+    return res.status(500).json({ ok: false, error: 'Telegram not configured' });
   }
 
   try {
     const { name, contact, service, subservices, area, total, message } = req.body || {};
-
-    // Формируем текст сообщения
     const time = new Date().toLocaleString('ru-RU', { timeZone: 'Asia/Tashkent' });
     
     let text = '📩 *Новая заявка с сайта Black Road*\n\n';
@@ -38,37 +26,17 @@ export default async function handler(req, res) {
     }
     text += `\n🕐 *Время:* ${time}`;
 
-    // Отправляем в Telegram
-    const telegramUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
-    
-    const response = await fetch(telegramUrl, {
+    const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        chat_id: CHAT_ID,
-        text: text,
-        parse_mode: 'Markdown'
-      })
+      body: JSON.stringify({ chat_id: CHAT_ID, text, parse_mode: 'Markdown' })
     });
 
     const data = await response.json();
+    if (!data.ok) throw new Error(data.description || 'Telegram error');
 
-    if (!data.ok) {
-      console.error('❌ Telegram API ошибка:', data);
-      throw new Error(data.description || 'Ошибка отправки в Telegram');
-    }
-
-    console.log('✅ Заявка отправлена в Telegram');
-    return res.status(200).json({ 
-      ok: true, 
-      message: 'Заявка успешно отправлена!' я
-    });
-
+    return res.status(200).json({ ok: true });
   } catch (error) {
-    console.error('❌ Ошибка:', error);
-    return res.status(500).json({ 
-      ok: false, 
-      error: error.message || 'Внутренняя ошибка сервера' 
-    });
+    return res.status(500).json({ ok: false, error: error.message });
   }
 }

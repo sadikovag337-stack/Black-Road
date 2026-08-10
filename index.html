@@ -148,7 +148,7 @@
                     <div class="contact-details">
                         <p><strong>Телефон:</strong> +998 90 962-46-77</p>
                         <p><strong>Email:</strong> Stroydorogu@gmail.com</p>
-                        <p><strong>Город:</strong> Ташкент, Узбекистаг</p>
+                        <p><strong>Город:</strong> Ташкент, Узбекистан</p>
                     </div>
                     <form class="contact-form" action="#" method="post">
                         <label>
@@ -175,33 +175,33 @@
             <p>© 2026 Black Road.</p>
         </div>
     </footer>
-        <!-- Bot settings (stored in session only) -->
-        <button id="botSettingsBtn" class="bot-settings-btn" title="Настройки бота">⚙</button>
-        <div id="botSettingsModal" class="modal" aria-hidden="true">
-            <div class="modal-backdrop" data-close></div>
-            <div class="modal-panel" role="dialog" aria-modal="true">
-                <button class="modal-close" data-close aria-label="Закрыть">×</button>
-                <header class="modal-header">
-                    <h3>Настройки Telegram</h3>
-                    <p class="muted">Токен бота и Chat ID сохраняются только в вашем браузере (sessionStorage).</p>
-                </header>
-                <div class="modal-body">
-                    <label>
-                        <span>Bot Token</span>
-                        <input id="inputBotToken" type="password" placeholder="Введите BOT_TOKEN">
-                    </label>
-                    <label>
-                        <span>Chat ID</span>
-                        <input id="inputChatId" type="text" placeholder="Введите CHAT_ID">
-                    </label>
-                    <div style="margin-top:12px; display:flex; gap:8px; justify-content:flex-end;">
-                        <button class="btn" data-close>Закрыть</button>
-                        <button id="saveBotSettings" class="btn btn-primary">Сохранить в session</button>
-                    </div>
+
+    <button id="botSettingsBtn" class="bot-settings-btn" title="Настройки бота">⚙</button>
+    <div id="botSettingsModal" class="modal" aria-hidden="true">
+        <div class="modal-backdrop" data-close></div>
+        <div class="modal-panel" role="dialog" aria-modal="true">
+            <button class="modal-close" data-close aria-label="Закрыть">×</button>
+            <header class="modal-header">
+                <h3>Настройки Telegram</h3>
+                <p class="muted">Токен бота и Chat ID сохраняются только в вашем браузере (sessionStorage).</p>
+            </header>
+            <div class="modal-body">
+                <label>
+                    <span>Bot Token</span>
+                    <input id="inputBotToken" type="password" placeholder="Введите BOT_TOKEN">
+                </label>
+                <label>
+                    <span>Chat ID</span>
+                    <input id="inputChatId" type="text" placeholder="Введите CHAT_ID">
+                </label>
+                <div style="margin-top:12px; display:flex; gap:8px; justify-content:flex-end;">
+                    <button class="btn" data-close>Закрыть</button>
+                    <button id="saveBotSettings" class="btn btn-primary">Сохранить в session</button>
                 </div>
             </div>
         </div>
-    <!-- Service details & calculator modal -->
+    </div>
+
     <div id="serviceModal" class="modal" aria-hidden="true">
         <div class="modal-backdrop" data-close></div>
         <div class="modal-panel" role="dialog" aria-modal="true">
@@ -210,12 +210,8 @@
                 <h3 id="modalTitle">Услуга</h3>
                 <p id="modalSubtitle" class="muted">Выберите подуслуги и введите площадь</p>
             </header>
-
             <div class="modal-body">
-                <div id="subservicesList" class="subservices-list">
-                    <!-- populated dynamically -->
-                </div>
-
+                <div id="subservicesList" class="subservices-list"></div>
                 <div class="calc-row">
                     <label>
                         <span>Площадь (м²)</span>
@@ -223,13 +219,11 @@
                     </label>
                     <div class="unit-info">Цена: <strong>$10</strong> за м² за выбранную подуслугу</div>
                 </div>
-
                 <div class="calc-total">
                     <div>Выбрано подуслуг: <span id="countSelected">0</span></div>
                     <div>Итого: <strong id="totalAmount">$0.00</strong></div>
                 </div>
             </div>
-
             <footer class="modal-actions">
                 <button class="btn" data-close>Отмена</button>
                 <button id="requestQuote" class="btn btn-primary">Отправить заявку</button>
@@ -239,12 +233,9 @@
 
     <script>
         (function(){
-            // Subservices map (example items). Price is fixed $10 per m² per selected subservice.
             const PRICE_PER_M2 = 10;
-            // Apps Script webhook is disabled for Vercel backend delivery.
             const APPS_SCRIPT_WEBHOOK = '';
             const APPS_SCRIPT_SECRET = '';
-            // Email client submission disabled; use server-side Vercel endpoint instead.
             const EMAIL_RECIPIENT = '';
             const subservices = {
                 "Дорожно разметочные работы": ["Разметка термопластиком","Вертикальная разметка","Нанесение знаков"],
@@ -277,13 +268,11 @@
                 subservicesList.innerHTML = '';
                 const items = subservices[serviceName] || ["Основная подуслуга"];
                 items.forEach((it, idx) =>{
-                    const id = 'ss-'+idx;
                     const wrapper = document.createElement('label');
                     wrapper.className = 'subservice-item';
                     wrapper.innerHTML = `<input type="checkbox" data-name="${it}" data-price="${PRICE_PER_M2}"> <span>${it}</span>`;
                     subservicesList.appendChild(wrapper);
                 });
-                // attach change listeners
                 subservicesList.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.addEventListener('change', updateCalc));
             }
 
@@ -296,10 +285,8 @@
                 totalAmount.textContent = `$${total.toFixed(2)}`;
             }
 
-            // wire service buttons (do not modify existing HTML)
             document.querySelectorAll('.service .btn').forEach(btn => {
                 btn.addEventListener('click', function(e){
-                    // find service title
                     const serviceEl = e.target.closest('.service');
                     if(!serviceEl) return;
                     const titleEl = serviceEl.querySelector('h3');
@@ -308,17 +295,11 @@
                 });
             });
 
-            // close handlers
             modal.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click', closeModal));
-            // close on Escape
             window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeModal(); });
-
-            // update on area change
             inputArea.addEventListener('input', updateCalc);
 
-            // request quote: send to serverless endpoint which forwards to Telegram
             async function postToServer(payload){
-                // Helper to safely parse response bodies that may be empty or non-JSON
                 async function safeParse(resp){
                     const text = await resp.text();
                     if(!text) return { ok: resp.ok, status: resp.status };
@@ -326,12 +307,10 @@
                 }
 
                 try{
-                    // If EMAIL_RECIPIENT is set, open user's mail client with a prefilled message and skip other delivery.
                     if(EMAIL_RECIPIENT){
                         const ok = sendEmailViaClient(payload);
                         return { ok: ok, via: 'mailto' };
                     }
-                    // if session has direct token/chat — send directly from browser
                     const token = sessionStorage.getItem('tg_token');
                     const chat = sessionStorage.getItem('tg_chat');
                     if (token && chat) {
@@ -350,11 +329,9 @@
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ chat_id: chat, text, parse_mode: 'Markdown' })
                         });
-                        // Telegram Bot API is not CORS-friendly; if this fails the fetch will throw.
                         return await safeParse(resp);
                     }
 
-                    // try Apps Script webhook (if configured) before serverless fallback
                     if(APPS_SCRIPT_WEBHOOK){
                         try{
                             const asPayload = Object.assign({}, payload, { secret: APPS_SCRIPT_SECRET });
@@ -370,7 +347,6 @@
                         }
                     }
 
-                    // fallback to serverless endpoint
                     const res = await fetch('/api/send-telegram', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -382,7 +358,6 @@
                 }
             }
 
-            // Build and open mailto: link with encoded subject/body. Returns true if opened.
             function sendEmailViaClient(payload){
                 try{
                     const to = EMAIL_RECIPIENT;
@@ -405,34 +380,28 @@
                 }
             }
 
-            // === ИЗМЕНЕННАЯ ЧАСТЬ ДЛЯ МОДАЛЬНОГО ОКНА ===
             document.getElementById('requestQuote').addEventListener('click', async function(){
-                // Проверяем, выбраны ли подуслуги
                 const checkedNames = Array.from(subservicesList.querySelectorAll('input[type=checkbox]:checked')).map(cb=>cb.dataset.name).join(', ');
                 const areaVal = inputArea.value || '0';
                 const totalVal = totalAmount.textContent || '$0.00';
 
-                // Проверка: выбрана ли хоть одна подуслуга
                 if (!checkedNames) {
                     alert('⚠️ Пожалуйста, выберите хотя бы одну подуслугу!');
                     return;
                 }
 
-                // Проверка: площадь больше 0
                 if (parseFloat(areaVal) <= 0) {
                     alert('⚠️ Пожалуйста, укажите площадь больше 0!');
                     return;
                 }
 
-                // ЗАПРАШИВАЕМ ИМЯ
                 const usrName = prompt('Введите ваше имя и фамилию:');
-                if (usrName === null) return; // пользователь нажал Отмена
+                if (usrName === null) return;
                 if (usrName.trim() === '') {
                     alert('❌ Имя обязательно для заполнения!');
                     return;
                 }
 
-                // ЗАПРАШИВАЕМ ТЕЛЕФОН
                 const usrContact = prompt('Введите ваш номер телефона:\n(например: +998 90 123-45-67)');
                 if (usrContact === null) return;
                 if (usrContact.trim() === '') {
@@ -440,7 +409,6 @@
                     return;
                 }
 
-                // Формируем данные для отправки
                 const payload = {
                     name: usrName.trim(),
                     contact: usrContact.trim(),
@@ -451,7 +419,6 @@
                     message: `Площадь: ${areaVal} м²\nПодуслуги: ${checkedNames}\nИтого: ${totalVal}`
                 };
 
-                // Отправляем
                 const result = await postToServer(payload);
                 if(result.ok){
                     alert('✅ Заявка успешно отправлена!\n\n' +
@@ -469,7 +436,6 @@
                 closeModal();
             });
 
-            // contact form submit -> send to same endpoint (это не трогаем)
             const contactForm = document.querySelector('.contact-form');
             if(contactForm){
                 contactForm.addEventListener('submit', async function(e){
@@ -493,7 +459,6 @@
                 });
             }
 
-            // Bot settings modal wiring (store token/chat in sessionStorage)
             const botBtn = document.getElementById('botSettingsBtn');
             const botModal = document.getElementById('botSettingsModal');
             const botCloseEls = botModal ? botModal.querySelectorAll('[data-close]') : [];
@@ -505,7 +470,6 @@
                 if(!botModal) return;
                 botModal.classList.add('open');
                 botModal.setAttribute('aria-hidden','false');
-                // prefill from session
                 inputBotToken.value = sessionStorage.getItem('tg_token') || '';
                 inputChatId.value = sessionStorage.getItem('tg_chat') || '';
             }
